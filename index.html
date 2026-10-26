@@ -70,7 +70,8 @@ const KEY = CFG.key;
 let S = null;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
 S = Object.assign({rec: {}, wrong: {}, fav: {}, mock: {}, hist: [], cur: null,
-                   prefs: {s: SUBS[0], star: 1, mode: 'all', shuf: false}, plan: {chk: {}, snap: {}}}, S || {});
+                   prefs: {s: SUBS[0], star: 1, mode: 'all', shuf: false, mshuf: false}, plan: {chk: {}, snap: {}}}, S || {});
+if (S.prefs.mshuf == null) S.prefs.mshuf = false;
 const save = quiet => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!quiet) markDirty(); };
 
 const ITEMS = {}, ORDER = {};
@@ -131,6 +132,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', 
 const paperOf = id => DATA.mock.find(p => p.id === id);
 const isOk = (q, a) => q.ans == null || a === q.ans || (Array.isArray(q.ans) && q.ans.includes(a));
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const mockOrder = ids => S.prefs.mshuf ? shuffle([...ids]) : [...ids];
 const fmt = ms => { const t = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 
 let view = 'home', tab = 'plan', sess = null, result = null, timerId = null;
@@ -466,6 +468,7 @@ function mockTab() {
   }
   const need = SUBS.map(s => `${SHORT[s]}對 ${Math.ceil(CFG.subj[s].n * 0.7)} 題`).join('、');
   h += `<div class="card mut">限時作答、交卷才公布答案；真考三科合計 210 分合格、任一科不得低於 50 分（每科以 70 分為目標：${need}）。中途離開會保留進度，但時間照走。答錯與未作答的題目會自動加入錯題本。</div>`;
+  h += `<div class="card"><label><input type="checkbox" data-pref="mshuf" ${S.prefs.mshuf ? 'checked' : ''}> 隨機順序</label><div class="mut">開了之後，新開始的歷屆原卷／預測卷／仿真模擬考會打亂題號（進行中的那份不會改）。關著＝原卷題號順序。</div></div>`;
   const rm = k => S.mock[k] ? ` · 最高 ${S.mock[k].best} 分 · 做過 ${S.mock[k].times} 次` : '';
   h += `${simCard(rm)}
     <div class="card"><b>🎯 預測卷 A／B／C</b><div class="mut">依歷屆命題規律組卷（說明見上方「🎯 預測」頁）；每份含少量舊屆題，三份之間不重複。題目固定、做完就沒了；要重複刷、估實力請用上面的仿真模擬考（比 C 卷更像真考）。</div></div>`;
@@ -936,13 +939,13 @@ function act(a, arg) {
     case 'mstart': {
       if (S.cur && !confirm('會放棄目前未完成的模擬考，確定開始新的一份？')) return;
       const p = paperOf(arg);
-      if (!confirm(`${p.name}\n限時 ${p.min} 分鐘，按確定開始計時。`)) return;
-      S.cur = {pid: p.id, ids: p.items.map(q => q.id), name: p.name, min: p.min, ans: {}, i: 0, start: Date.now(), end: Date.now() + p.min * 60000}; save(); showMock(); break; }
+      if (!confirm(`${p.name}\n限時 ${p.min} 分鐘${S.prefs.mshuf ? '、題目隨機順序' : ''}，按確定開始計時。`)) return;
+      S.cur = {pid: p.id, ids: mockOrder(p.items.map(q => q.id)), name: p.name, min: p.min, ans: {}, i: 0, start: Date.now(), end: Date.now() + p.min * 60000}; save(); showMock(); break; }
     case 'sstart': {
       if (S.cur && !confirm('會放棄目前未完成的模擬考，確定開始新的一份？')) return;
       const min = subjMin(arg), name = `仿真模擬考 ${SHORT[arg]}`, g = genSim(arg);
-      if (!confirm(`${name}\n限時 ${min} 分鐘，按確定開始計時。\n（其中 ${g.fresh} 題是你還沒做過的）`)) return;
-      S.cur = {pid: `sim-${arg}`, ids: g.ids, name, min, fresh: g.fresh, ans: {}, i: 0, start: Date.now(), end: Date.now() + min * 60000};
+      if (!confirm(`${name}\n限時 ${min} 分鐘${S.prefs.mshuf ? '、題目隨機順序' : ''}，按確定開始計時。\n（其中 ${g.fresh} 題是你還沒做過的）`)) return;
+      S.cur = {pid: `sim-${arg}`, ids: mockOrder(g.ids), name, min, fresh: g.fresh, ans: {}, i: 0, start: Date.now(), end: Date.now() + min * 60000};
       save(); showMock(); break; }
     case 'bstart': { const B = boostList(arg);
       startSession(B.list, `${SHORT[arg]}｜提分衝刺（這份粗估值 ${B.gain.toFixed(1)} 分）`, 'hot'); break; }
@@ -1006,7 +1009,7 @@ app.addEventListener('change', e => {
   if (e.target.dataset.planDays != null) { applyPlanDays(e.target.value); return; }
   const k = e.target.dataset.pref;
   if (!k) return;
-  S.prefs[k] = k === 'shuf' ? e.target.checked : k === 'star' ? +e.target.value : e.target.value;
+  S.prefs[k] = (k === 'shuf' || k === 'mshuf') ? e.target.checked : k === 'star' ? +e.target.value : e.target.value;
   save(); home();
 });
 document.addEventListener('keydown', e => {
@@ -1190,7 +1193,7 @@ function syncCard() {
 }
 setInterval(() => { if (document.visibilityState === 'visible') syncNow(true); }, PULL_GAP);
 
-const PAGE_VER = '1792126998';
+const PAGE_VER = '1793033649';
 function checkUpdate() {
   if (document.getElementById('newver')) return;
   fetch('index.html?x=' + Date.now(), {cache: 'no-store'}).then(r => r.text()).then(t => {
