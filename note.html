@@ -13,7 +13,7 @@ table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
 th,td{border:1px solid var(--bd);padding:6px 8px;vertical-align:top}th{background:var(--th)}
 .q{margin:14px 0;padding:10px 12px;border:1px solid var(--bd);border-radius:10px}
 .star{color:#d97706}#totop{position:fixed;right:14px;bottom:18px;background:var(--pri);color:#fff;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;text-decoration:none}
-</style></head><body id="top"><div class="top"><a href="./?v=1792128999">📝 題庫</a><a href="note.html?v=1792128999">📖 筆記</a><a href="answers.html?v=1792128999">✅ 解析</a><a href="numbers.html?v=1792128999">🔢 數字</a><a href="predict.html?v=1792128999">🎯 預測</a></div><main><h1>證券商高級業務員　讀書筆記（歷屆考古整理）</h1>
+.top details.more{position:relative}.top details.more>summary{list-style:none;cursor:pointer;border:1px solid var(--bd);border-radius:10px;padding:6px 10px;font-size:15px;color:var(--pri)}.top details.more>summary::-webkit-details-marker{display:none}.top details.more .morebox{position:absolute;left:0;top:calc(100% + 4px);z-index:8;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:110px;box-shadow:0 4px 14px rgba(0,0,0,.12)}</style></head><body id="top"><div class="top"><a href="./?v=1795638664">📝 題庫</a><a href="note.html?v=1795638664">📖 筆記</a><details class="more"><summary>⋯ 更多</summary><div class="morebox"><a href="numbers.html?v=1795638664">🔢 數字</a><a href="answers.html?v=1795638664">✅ 解析</a></div></details></div><main><h1>證券商高級業務員　讀書筆記（歷屆考古整理）</h1>
 <p class="mut">這份是從<strong>本站主庫歷屆試題＋官方答案＋解析</strong>整理的自用筆記，只放考過的考點，並附屆次／題號。刷題回「📝 題庫」；完整長文解析用「✅ 解析」；背數字用「🔢 數字」。（不是市售課本原文，也不會放進試用／付費站。）</p>
 <h2>第 0 部分　考試攻略</h2>
 <p class="mut">SFI 簡章：證券交易相關法規與實務 50 題 60 分鐘、投資學 50 題 60 分鐘、財務分析 50 題 90 分鐘，每題 2 分；三科總分 210 分合格，任一科不得低於 50 分</p>
@@ -542,4 +542,20 @@ th,td{border:1px solid var(--bd);padding:6px 8px;vertical-align:top}th{backgroun
 <li>⭐ <b>(2) 商譽</b> <span class="mut">（114-2-31、109-2-27、105-2-24）</span><br>依 IAS 21 第39、47段，國外營運機構財報換算為表達貨幣時，資產與負債以資產負債表日（期末）匯率換算；收購國外營運機構產生的商譽視為該機構的資產，同樣以期末匯率換算，選(2)。股本以歷史匯率、股利以宣告日匯率換算，保留盈餘則由前期換算餘額加減本期損益與股利推得。</li>
 <li>⭐ <b>(3) 以歷史匯率換算之當期損益</b> <span class="mut">（114-1-49、113-3-31、108-2-50）</span><br>換算後保留盈餘期末餘額＝上期換算後期末餘額＋本期損益（依交易日匯率，實務常用當期平均匯率換算）－股利（宣告日匯率）。當期損益並不是用「歷史匯率」換算，因此(3)不包含於計算中，選(3)。歷史匯率是用於股本等權益項目。</li>
 <li>⭐ <b>(2) 22.22%</b> <span class="mut">（113-3-50、112-1-48、110-2-24）</span><br>持有期間報酬率＝(期末價格－期初價格＋現金股利)÷期初價格＝(48－45＋7)÷45＝10÷45＝22.22%，選(2)。題目已說明$48 為除息後價格，股利要另外加計。</li>
-</ul></main><a id="totop" href="#top">↑</a></body></html>
+</ul></main><a id="totop" href="#top">↑</a><script>(function(){
+const p = new URLSearchParams(location.search).get('only'); if (!p) return;
+const ids = p.split(','), main = document.querySelector('main'), kids = [...main.children];
+let keep = false, lv = 9, n = 0;
+kids.forEach(el => {
+  const m = /^H([1-4])$/.exec(el.tagName);
+  if (m) { const l = +m[1]; if (ids.includes(el.id)) { keep = true; lv = l; n++; } else if (keep && l <= lv) keep = false; }
+  if (!keep) el.style.display = 'none';
+});
+if (!n) { kids.forEach(el => el.style.display = ''); return; }
+const bar = document.createElement('div');
+bar.className = 'mut';
+bar.style.cssText = 'background:var(--th);border-radius:10px;padding:8px 12px;margin:10px 0';
+bar.innerHTML = '只顯示這次要讀的章節　<a href="note.html">看完整筆記</a>　<a href="javascript:history.back()">← 回上一頁</a>';
+main.insertBefore(bar, main.firstChild);
+window.scrollTo(0, 0);
+})();</script></body></html>
