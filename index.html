@@ -183,8 +183,8 @@ function home() {
   view = 'home'; sess = null; stopTimer();
   if (tab === 'ana') tab = 'stats';
   const tabs = [['plan', '📅 每日'], ['practice', '📝 練習'], ['mock', '⏱ 模擬'], ['wrong', '❌ 錯題'], ['stats', '📊 紀錄']];
-  let h = `<header><div class="hrow"><h1>${esc(CFG.title)}</h1><span class="links"><a href="note.html?v=1795638664">📖 筆記</a>
-    <details class="more"><summary>⋯ 更多</summary><div class="morebox"><a href="numbers.html?v=1795638664">🔢 數字</a><a href="answers.html?v=1795638664">✅ 解析</a></div></details>
+  let h = `<header><div class="hrow"><h1>${esc(CFG.title)}</h1><span class="links"><a href="note.html?v=1795663224">📖 筆記</a>
+    <details class="more"><summary>⋯ 更多</summary><div class="morebox"><a href="numbers.html?v=1795663224">🔢 數字</a><a href="answers.html?v=1795663224">✅ 解析</a></div></details>
     </span></div><nav>${tabs.map(([k, v]) =>
     `<button class="tab ${tab === k ? 'on' : ''}" data-act="tab" data-arg="${k}">${v}</button>`).join('')}</nav></header><main>`;
   if (!['plan', 'practice', 'mock', 'wrong', 'stats'].includes(tab)) tab = 'plan';
@@ -300,9 +300,9 @@ const dayTime = di => planStartMs() + di * 86400000;
 const dayOpen = di => di <= todayIdx() || !!(S.plan.open || {})[di];
 const dayStart = di => Math.min(dayTime(di), (S.plan.open || {})[di] || Infinity);
 function noteHref(prefix) {
-  if (typeof prefix === 'string' && prefix.endsWith('.html')) return `${prefix}?v=1795638664`;
+  if (typeof prefix === 'string' && prefix.endsWith('.html')) return `${prefix}?v=1795663224`;
   const ids = [].concat(prefix).map(p => Object.keys(NOTE).find(t => t.startsWith(p))).filter(Boolean).map(k => NOTE[k]);
-  return `note.html?v=1795638664${ids.length ? '&only=' + encodeURIComponent(ids.join(',')) : ''}`;
+  return `note.html?v=1795663224${ids.length ? '&only=' + encodeURIComponent(ids.join(',')) : ''}`;
 }
 /* 錯題／解析「看本章考點」→ note.html?only=<slug>
  * slug＝筆記 h3 的 id：
@@ -313,7 +313,7 @@ function noteChHref(ch) {
   let id = ch;
   const hit = Object.keys(NOTE).find(t => t === ch || t.startsWith(ch));
   if (hit) id = NOTE[hit];
-  return `note.html?v=1795638664&only=${encodeURIComponent(id)}`;
+  return `note.html?v=1795663224&only=${encodeURIComponent(id)}`;
 }
 function todayIdx() {
   ensurePlan();
@@ -520,6 +520,7 @@ function mockTab() {
     const p = paperFromCur(S.cur);
     h += `<div class="card warn"><b>⚠ 有未完成的模擬考：${p.name}</b><br><span class="mut">剩餘 ${fmt(S.cur.end - Date.now())}</span><br>
       <button class="primary" data-act="resume">繼續作答</button><button data-act="abandon">放棄</button></div>`;
+  }
   if (S.day) { S.day = null; if (S.cur && S.cur.day) S.cur = null; save(); }
   const need = SUBS.map(s => `${SHORT[s]}≥70`).join('、');
   h += `<div class="card mut">⏱ 限時・交卷才看答案・真考三科合計 210 分合格、任一科不得低於 50 分（每科以 70 分為目標：${need}）。錯題進錯題本。
@@ -1254,7 +1255,7 @@ function syncCard() {
 }
 setInterval(() => { if (document.visibilityState === 'visible') syncNow(true); }, PULL_GAP);
 
-const PAGE_VER = '1795638664';
+const PAGE_VER = '1795663224';
 function checkUpdate() {
   if (document.getElementById('newver')) return;
   fetch('index.html?x=' + Date.now(), {cache: 'no-store'}).then(r => r.text()).then(t => {
